@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>
+Shaded Mandelbrot Set
+</title>
+</head>
+<body bgcolor="#000087">
+<canvas id="canvas" width="1400" height="750"></canvas>
+<script type="text/javascript">
+
+		var ca = -2; //Real "c" value
+		var cb = -1; //Imaginary "c" value
+		var za = 0; //Real "z" value
+		var zb = 0; //Imaginary "z" value
+		var previousZA = 0; //Temporary real z value
+		var previousZB = 0; //Temporary imaginary z value
+		var absZ = 0; //Absolute value of z
+		var limit = 10; //Limit for absolute value of z
+		var size = 300; //Size of entire fractal
+		var pixelSize = 3; //Size of each pixel
+		var totalIterations = 30; //Total iterations of z=z^2+c
+		var currentIterations = 0; //Current escape iterations
+		var chunkSize = 200; //Size of a rendering "chunk"
+						
+		function fillPixel(){ //Fills dynamic pixel
+
+				var canvas = document.getElementById("canvas");
+				var ctx = canvas.getContext("2d"); 
+			
+			ctx.fillRect(ca * size + 600, cb * size + 300, pixelSize, pixelSize);
+			
+			ctx.fillStyle = "rgb(0, 0, " + (currentIterations * 15) + ")"; 
+			ctx.fill();
+
+		}
+		
+		function defaultPixel(){ //Fills default pixel
+
+				var canvas = document.getElementById("canvas");
+				var ctx = canvas.getContext("2d"); 
+			
+			ctx.fillRect(ca * size + 600, cb * size + 300, pixelSize, pixelSize);
+			
+			ctx.fillStyle = "rgb(50, 50, 250)"; 
+			ctx.fill();
+
+		}
+		
+		function testPixel(){ //Tests pixel
+			
+			za = 0;
+			zb = 0;
+			currentIterations = 0;
+		
+			for(i=0;i<totalIterations;i++){
+				previousZA = za;
+				previousZB = zb;
+				
+				za = Math.pow(previousZA,2) - Math.pow(previousZB,2);
+				zb = 2 * previousZA * previousZB;
+				
+				za = za + ca; //Adds "c"
+				zb = zb + cb; //Adds "c"
+				
+				absZ = Math.sqrt(Math.pow(za,2) + Math.pow(zb,2));
+				currentIterations++;
+				
+				if(absZ>limit){
+					fillPixel();
+				}
+				else if(absZ<limit){
+					defaultPixel();
+				}
+			
+			}
+		
+			ca = ca + 0.01;
+			if(ca>3){
+				ca = -2;
+				cb = cb + 0.01;
+			}
+			if(cb>2){
+				cb = -1;
+			}
+
+		}
+			
+		function runChunk(){ //Runs rendering chunk
+			for(v=0;v<chunkSize;v++){
+				testPixel();
+			}
+		}
+				
+		var intervalID = window.setInterval(runChunk,1);
+
+</script>
+
+</body>
+</html>
